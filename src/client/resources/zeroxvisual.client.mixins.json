@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "oxteam.com.client.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "MixinClientLevel",
+    "MixinSkyColor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

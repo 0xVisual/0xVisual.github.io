@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0xVisual — Visual Mod for Minecraft</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+        --bg: #050505;
+        --bg-2: #0a0a0a;
+        --bg-3: #0f0f0f;
+        --red: #ff2d2d;
+        --red-dim: #cc1f1f;
+        --text: #ffffff;
+        --text-dim: #888888;
+        --text-dimmer: #555555;
+        --border: #1a1a1a;
+        --border-red: rgba(255, 45, 45, 0.3);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        overflow-x: hidden;
+        line-height: 1.6;
+    }
+
+    /* Сетка на фоне */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255, 45, 45, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 45, 45, 0.03) 1px, transparent 1px);
+        background-size: 60px 60px;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* Красное свечение сверху */
+    body::after {
+        content: '';
+        position: fixed;
+        top: -30%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 60%;
+        background: radial-gradient(ellipse, rgba(255, 45, 45, 0.15) 0%, transparent 60%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* === NAVBAR === */
+    nav {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 60px;
+        background: rgba(10, 10, 10, 0.8);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        z-index: 100;
+        transition: all 0.4s ease;
+    }
+
+    nav.scrolled {
+        top: 12px;
+        padding: 10px 20px;
+        background: rgba(5, 5, 5, 0.95);
+        border-color: var(--border-red);
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 18px;
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        font-family: 'Courier New', monospace;
+    }
+
+    .logo-icon {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--red) 0%, var(--red-dim) 100%);
+        border-radius: 6px;
+        font-family: monospace;
+        font-weight: 900;
+        font-size: 14px;
+        color: #fff;
+        box-shadow: 0 0 15px rgba(255, 45, 45, 0.4);
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 30px;
+        list-style: none;
+    }
+
+    .nav-links a {
+        color: var(--text-dim);
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: color 0.3s ease;
+        position: relative;
+        padding-bottom: 4px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+        color: var(--text);
+    }
+
+    .nav-links a.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--red);
+        box-shadow: 0 0 8px var(--red);
+    }
+
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .btn-nav {
+        padding: 8px 18px;
+        background: transparent;
+        border: 1px solid var(--border-red);
+        color: var(--red);
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-nav:hover {
+        background: var(--red);
+        color: #fff;
+        box-shadow: 0 0 20px rgba(255, 45, 45, 0.5);
+    }
+
+    /* === HERO === */
+    .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 120px 20px 60px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-title {
+        font-size: clamp(40px, 7vw, 88px);
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -3px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        animation: fadeIn 1s ease;
+    }
+
+    .hero-title-2 {
+        font-size: clamp(36px, 6vw, 76px);
+        font-weight: 400;
+        font-style: italic;
+        color: var(--red);
+        letter-spacing: -2px;
+        margin-bottom: 40px;
+        font-family: Georgia, serif;
+        animation: fadeIn 1.2s ease;
+        position: relative;
+        display: inline-block;
+    }
+
+    .hero-title-2::after {
+        content: '|';
+        color: var(--red);
+        animation: blink 1s infinite;
+        margin-left: 4px;
+    }
+
+    @keyframes blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        animation: fadeIn 1.4s ease;
+    }
+
+    .btn-primary {
+        padding: 14px 28px;
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-primary:hover {
+        background: var(--red);
+        border-color: var(--red);
+        color: #fff;
+        box-shadow: 0 0 30px rgba(255, 45, 45, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        padding: 14px 28px;
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-secondary:hover {
+        border-color: var(--red);
+        color: var(--red);
+        transform: translateY(-2px);
+    }
+
+    /* Терминал */
+    .terminal {
+        margin-top: 80px;
+        width: 100%;
+        max-width: 800px;
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+        text-align: left;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        animation: fadeIn 1.6s ease;
+    }
+
+    .terminal-header {
+        padding: 12px 16px;
+        background: var(--bg-3);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .terminal-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #333;
+    }
+
+    .terminal-dot.red { background: #ff5f56; }
+    .terminal-dot.yellow { background: #ffbd2e; }
+    .terminal-dot.green { background: #27c93f; }
+
+    .terminal-title {
+        margin-left: auto;
+        color: var(--text-dimmer);
+        font-size: 11px;
+    }
+
+    .terminal-body {
+        padding: 20px;
+        color: var(--text-dim);
+        line-height: 1.8;
+    }
+
+    .prompt { color: var(--red); }
+    .cmd { color: #fff; }
+    .success { color: #27c93f; }
+    .error { color: var(--red); }
+
+    .progress-bar {
+        display: inline-block;
+        width: 200px;
+        height: 8px;
+        background: #1a1a1a;
+        border-radius: 4px;
+        overflow: hidden;
+        vertical-align: middle;
+        margin-left: 8px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--red), var(--red-dim));
+        box-shadow: 0 0 10px var(--red);
+        animation: fillBar 2s ease;
+    }
+
+    @keyframes fillBar {
+        from { width: 0%; }
+    }
+
+    /* === SECTION === */
+    section {
+        padding: 120px 60px;
+        position: relative;
+        z-index: 1;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .section-line {
+        width: 4px;
+        height: 50px;
+        background: var(--red);
+        box-shadow: 0 0 15px var(--red);
+    }
+
+    .section-title {
+        font-size: clamp(36px, 5vw, 56px);
+        font-weight: 900;
+        letter-spacing: -2px;
+        text-transform: uppercase;
+        line-height: 1;
+    }
+
+    .section-sub {
+        color: var(--text-dim);
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 60px;
+        margin-left: 24px;
+    }
+
+    /* === FEATURES GRID === */
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .feature {
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 32px;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    .feature.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .feature::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--red);
+        transition: width 0.5s ease;
+        box-shadow: 0 0 10px var(--red);
+    }
+
+    .feature:hover::before {
+        width: 100%;
+    }
+
+    .feature:hover {
+        border-color: var(--border-red);
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(255, 45, 45, 0.1);
+    }
+
+    .feature-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-red);
+        border-radius: 8px;
+        color: var(--red);
+        font-size: 18px;
+        margin-bottom: 24px;
+    }
+
+    .feature-title {
+        font-size: 16px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+    }
+
+    .feature-text {
+        font-size: 13px;
+        color: var(--text-dim);
+        line-height: 1.7;
+    }
+
+    /* === STEPS === */
+    .steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+    }
+
+    .step {
+        padding: 32px 24px;
+        border-left: 2px solid var(--border);
+        transition: all 0.4s ease;
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    .step.visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .step:hover {
+        border-left-color: var(--red);
+        padding-left: 32px;
+    }
+
+    .step-num {
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        color: var(--red);
+        letter-spacing: 2px;
+        margin-bottom: 16px;
+    }
+
+    .step-title {
+        font-size: 18px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+    }
+
+    .step-text {
+        font-size: 13px;
+        color: var(--text-dim);
+        line-height: 1.7;
+    }
+
+    /* === PROJECTS === */
+    .projects {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .project {
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 28px;
+        transition: all 0.4s ease;
+        position: relative;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .project:hover {
+        border-color: var(--border-red);
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(255, 45, 45, 0.1);
+    }
+
+    .project-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        background: rgba(255, 45, 45, 0.1);
+        border: 1px solid var(--border-red);
+        color: var(--red);
+        border-radius: 100px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+    }
+
+    .project-title {
+        font-size: 18px;
+        font-weight: 800;
+        margin-bottom: 12px;
+        letter-spacing: -0.5px;
+    }
+
+    .project-text {
+        font-size: 13px;
+        color: var(--text-dim);
+        line-height: 1.7;
+        margin-bottom: 20px;
+    }
+
+    .project-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: var(--text-dimmer);
+        font-family: 'Courier New', monospace;
+    }
+
+    .project-footer .red { color: var(--red); }
+
+    /* === CTA === */
+    .cta {
+        background: linear-gradient(135deg, var(--bg-2) 0%, var(--bg-3) 100%);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 80px 60px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 45, 45, 0.15) 0%, transparent 40%);
+        animation: rotate 30s linear infinite;
+    }
+
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .cta > * { position: relative; z-index: 1; }
+
+    .cta-title {
+        font-size: clamp(32px, 5vw, 64px);
+        font-weight: 900;
+        letter-spacing: -2px;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+    }
+
+    .cta-sub {
+        color: var(--text-dim);
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 40px;
+    }
+
+    /* === CONTACT === */
+    .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .contact-card {
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 32px;
+        transition: all 0.4s ease;
+    }
+
+    .contact-card:hover {
+        border-color: var(--border-red);
+        transform: translateY(-4px);
+    }
+
+    .contact-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 45, 45, 0.1);
+        border: 1px solid var(--border-red);
+        border-radius: 10px;
+        color: var(--red);
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    .contact-title {
+        font-size: 16px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+    }
+
+    .contact-text {
+        font-size: 13px;
+        color: var(--text-dim);
+        margin-bottom: 16px;
+    }
+
+    .contact-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--red);
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+
+    .contact-link:hover {
+        gap: 12px;
+    }
+
+    /* === FOOTER === */
+    footer {
+        padding: 60px;
+        border-top: 1px solid var(--border);
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    .footer-title {
+        font-size: 11px;
+        color: var(--text-dimmer);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .footer-title::before {
+        content: '';
+        width: 3px;
+        height: 12px;
+        background: var(--red);
+    }
+
+    .footer-list {
+        list-style: none;
+    }
+
+    .footer-list li {
+        margin-bottom: 10px;
+    }
+
+    .footer-list a {
+        color: var(--text-dim);
+        text-decoration: none;
+        font-size: 13px;
+        transition: color 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .footer-list a::before {
+        content: '»';
+        color: var(--red);
+        font-size: 10px;
+    }
+
+    .footer-list a:hover { color: var(--text); }
+
+    .footer-bottom {
+        padding: 30px 60px;
+        border-top: 1px solid var(--border);
+        text-align: center;
+        font-size: 12px;
+        color: var(--text-dimmer);
+        position: relative;
+        z-index: 1;
+    }
+
+    /* === SCROLLBAR === */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: var(--red); }
+
+    /* === MOBILE === */
+    @media (max-width: 900px) {
+        nav {
+            padding: 10px 16px;
+            gap: 20px;
+        }
+        .nav-links { display: none; }
+        section { padding: 80px 20px; }
+        .hero { padding: 100px 20px 40px; }
+        .cta { padding: 60px 24px; }
+        footer {
+            grid-template-columns: 1fr;
+            padding: 40px 20px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<!-- === NAVBAR === -->
+<nav id="navbar">
+    <div class="logo">
+        <div class="logo-icon">0x</div>
+        <span>VISUAL</span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="#home" class="active">Главная</a></li>
+        <li><a href="#about">О нас</a></li>
+        <li><a href="#projects">Проекты</a></li>
+        <li><a href="#contact">Контакты</a></li>
+    </ul>
+    <div class="nav-right">
+        <a href="#download" class="btn-nav">Скачать</a>
+    </div>
+</nav>
+
+<!-- === HERO === -->
+<section class="hero" id="home">
+    <h1 class="hero-title">Новый взгляд на</h1>
+    <div class="hero-title-2">визуальный Minecraft</div>
+    <div class="hero-buttons">
+        <a href="#projects" class="btn-primary">Изучить проекты →</a>
+        <a href="https://github.com/0xVisual/0xVisual" class="btn-secondary">GitHub ↗</a>
+    </div>
+
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+            <div class="terminal-title">terminal@0xvisual:~</div>
+        </div>
+        <div class="terminal-body">
+            <div>$ <span class="prompt">root@0xvisual</span>:~$ <span class="cmd">java -jar 0xvisual-1.6.jar</span></div>
+            <div>Loading visual mod... <span class="success">[OK]</span></div>
+            <div>Hooking into Minecraft 1.20.1...</div>
+            <div>ClickGUI / HUD / ArrayList / SkyColor</div>
+            <div>Removing folder: <span class="cmd">no-cheats/</span><span class="progress-bar"><span class="progress-fill" style="width: 100%;"></span></span> <span class="success">100%</span></div>
+            <div>Removing folder: <span class="cmd">aimbot/</span><span class="progress-bar"><span class="progress-fill" style="width: 100%;"></span></span> <span class="success">100%</span></div>
+            <div>Removing folder: <span class="cmd">wallhack/</span><span class="progress-bar"><span class="progress-fill" style="width: 100%;"></span></span> <span class="success">100%</span></div>
+            <div><span class="error">Operation completed: only visuals, no cheats</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- === О НАС === -->
+<section id="about">
+    <div class="section-header">
+        <div class="section-line"></div>
+        <h2 class="section-title">О нас</h2>
+    </div>
+    <div class="section-sub">Что мы делаем?</div>
+
+    <div class="features">
+        <div class="feature">
+            <div class="feature-icon">⌘</div>
+            <div class="feature-title">Только визуал</div>
+            <div class="feature-text">Никаких читов, аимботов и ESP. Только косметика: HUD, частицы, шляпа, смена неба. Безопасно для серверов.</div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-title">Лёгкий код</div>
+            <div class="feature-text">Мод написан на Fabric. Не грузит ПК, не крашит игру, не конфликтует с другими модами.</div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🔓</div>
+            <div class="feature-title">Открытый исходник</div>
+            <div class="feature-text">Весь код мода лежит на GitHub. Можешь посмотреть, собрать сам или предложить свою идею.</div>
+        </div>
+    </div>
+</section>
+
+<!-- === ПРОЕКТЫ === -->
+<section id="projects">
+    <div class="section-header">
+        <div class="section-line"></div>
+        <h2 class="section-title">Проекты</h2>
+    </div>
+    <div class="section-sub">Что мы сделали</div>
+
+    <div class="projects">
+        <a href="https://github.com/0xVisual/0xVisual.github.io/releases" class="project">
+            <div class="project-tag">Fabric Mod</div>
+            <div class="project-title">0xVisual — Visual Mod</div>
+            <div class="project-text">Легальный визуальный мод для Minecraft 1.20.1 Fabric. HUD, ArrayList, ClickGUI, частицы, шляпа, смена неба.</div>
+            <div class="project-footer">
+                <span>Java · Fabric · Mixin</span>
+                <span class="red">Просмотр →</span>
+            </div>
+        </a>
+
+        <a href="#download" class="project">
+            <div class="project-tag">Download</div>
+            <div class="project-title">0xVisual — Скачать</div>
+            <div class="project-text">Скачай последнюю версию мода для Fabric 1.20.1. Требуется Fabric API.</div>
+            <div class="project-footer">
+                <span>Windows · 1.20.1</span>
+                <span class="red">Скачать →</span>
+            </div>
+        </a>
+
+        <a href="https://github.com/0xVisual/0xVisual" class="project">
+            <div class="project-tag">Open Source</div>
+            <div class="project-title">GitHub Repository</div>
+            <div class="project-text">Исходный код мода. Собирай сам, предлагай идеи, сообщай о багах через Issues.</div>
+            <div class="project-footer">
+                <span>MIT License</span>
+                <span class="red">GitHub →</span>
+            </div>
+        </a>
+    </div>
+</section>
+
+<!-- === УСТАНОВКА === -->
+<section id="install">
+    <div class="section-header">
+        <div class="section-line"></div>
+        <h2 class="section-title">Установка</h2>
+    </div>
+    <div class="section-sub">Как установить мод</div>
+
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">01</div>
+            <div class="step-title">Скачай .jar</div>
+            <div class="step-text">Скачай последний релиз 0xVisual и Fabric API для версии 1.20.1.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">02</div>
+            <div class="step-title">Установи Fabric</div>
+            <div class="step-text">Установи Fabric Loader 1.20.1 с официального сайта fabricmc.net.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">03</div>
+            <div class="step-title">Положи в mods</div>
+            <div class="step-text">Скопируй оба .jar в .minecraft/mods. Запусти игру с профилем Fabric.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">04</div>
+            <div class="step-title">Играй</div>
+            <div class="step-text">Зайди в мир и нажми Right Shift, чтобы открыть меню мода.</div>
+        </div>
+    </div>
+</section>
+
+<!-- === DOWNLOAD CTA === -->
+<section id="download">
+    <div class="cta">
+        <h2 class="cta-title">Скачать 0xVisual</h2>
+        <p class="cta-sub">Minecraft 1.20.1 Fabric · Бесплатно · Open Source</p>
+        <a href="https://github.com/0xVisual/0xVisual.github.io/releases" class="btn-primary">Скачать последнюю версию ↓</a>
+    </div>
+</section>
+
+<!-- === КОНТАКТЫ === -->
+<section id="contact">
+    <div class="section-header">
+        <div class="section-line"></div>
+        <h2 class="section-title">Связаться с нами</h2>
+    </div>
+    <div class="section-sub">Свяжитесь с нашей командой</div>
+
+    <div class="contact-grid">
+        <div class="contact-card">
+            <div class="contact-icon">✉</div>
+            <div class="contact-title">Email</div>
+            <div class="contact-text">Для общих вопросов и предложений по сотрудничеству.</div>
+            <a href="mailto:contact@0xvisual.dev" class="contact-link">→ Написать</a>
+        </div>
+        <div class="contact-card">
+            <div class="contact-icon">⌥</div>
+            <div class="contact-title">GitHub</div>
+            <div class="contact-text">Ознакомьтесь с нашими проектами с открытым исходным кодом.</div>
+            <a href="https://github.com/0xVisual/0xVisual" class="contact-link">→ Перейти</a>
+        </div>
+    </div>
+</section>
+
+<!-- === FOOTER === -->
+<footer>
+    <div>
+        <div class="logo" style="margin-bottom: 12px;">
+            <div class="logo-icon">0x</div>
+            <span>VISUAL</span>
+        </div>
+        <div style="font-size: 12px; color: var(--text-dimmer); text-transform: uppercase; letter-spacing: 2px;">A group of enthusiasts</div>
+    </div>
+
+    <div>
+        <div class="footer-title">Навигация</div>
+        <ul class="footer-list">
+            <li><a href="#home">Главная</a></li>
+            <li><a href="#about">О нас</a></li>
+            <li><a href="#projects">Проекты</a></li>
+            <li><a href="#contact">Контакты</a></li>
+        </ul>
+    </div>
+
+    <div>
+        <div class="footer-title">Контакты</div>
+        <ul class="footer-list">
+            <li><a href="mailto:contact@0xvisual.dev">Email</a></li>
+            <li><a href="https://github.com/0xVisual/0xVisual">GitHub</a></li>
+            <li><a href="#download">Скачать</a></li>
+        </ul>
+    </div>
+
+    <div>
+        <div class="footer-title">Политики</div>
+        <ul class="footer-list">
+            <li><a href="#">Пользовательское соглашение</a></li>
+            <li><a href="#">Политика конфиденциальности</a></li>
+        </ul>
+    </div>
+</footer>
+
+<div class="footer-bottom">
+    © 2026 0xVisual. Не связан с Mojang Studios или Microsoft.
+</div>
+
+<!-- === JAVASCRIPT === -->
+<script>
+    // Navbar scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) navbar.classList.add('scrolled');
+        else navbar.classList.remove('scrolled');
+    });
+
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.feature, .step').forEach(el => {
+        observer.observe(el);
+    });
+
+    // Active nav link on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 200;
+            if (window.scrollY >= sectionTop) current = section.getAttribute('id');
+        });
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+        });
+    });
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.querySelector(link.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+</script>
+
+</body>
+</html>

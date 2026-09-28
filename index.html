@@ -282,7 +282,7 @@
         }
     }
 
-    function showUser(login, id, avatar, uuid) {
+        function showUser(login, id, avatar, uuid) {
         document.getElementById('userAvatar').src = avatar || 'https://github.com/identicons/' + login;
         document.getElementById('userLogin').textContent = '@' + login;
         document.getElementById('userId').textContent = 'ID: ' + id;
@@ -297,9 +297,12 @@
         document.getElementById('loginBtnMain').style.display = 'none';
         document.getElementById('logoutBtn').style.display = 'inline-block';
 
-        // Проверяем Premium
-        if (uuid) {
-            fetch(SUPABASE_URL + '/rest/v1/premium?user_id=eq.' + uuid + '&select=expires_at', {
+        // Числовой ID
+        const numId = parseInt(id);
+
+        if (numId > 0) {
+            // Проверяем Premium
+            fetch(SUPABASE_URL + '/rest/v1/premium?user_id=eq.' + numId + '&select=expires_at', {
                 headers: { 'apikey': SUPABASE_ANON }
             }).then(r => r.json()).then(d => {
                 if (Array.isArray(d) && d.length > 0) {
@@ -311,6 +314,17 @@
                     }
                 }
             });
+
+            // Проверяем, разработчик ли
+            fetch(SUPABASE_URL + '/rest/v1/developers?user_id=eq.' + numId + '&select=user_id', {
+                headers: { 'apikey': SUPABASE_ANON }
+            }).then(r => r.json()).then(d => {
+                if (Array.isArray(d) && d.length > 0) {
+                    document.getElementById('devBtn').style.display = 'inline-block';
+                }
+            });
+        }
+    }
 
             // Проверяем разработчик ли
             fetch(SUPABASE_URL + '/rest/v1/developers?user_id=eq.' + uuid + '&select=user_id', {

@@ -179,7 +179,6 @@
     <div class="loading">Загрузка...</div>
 </div>
 
-<!-- Модальное окно выдачи Premium -->
 <div class="modal" id="premiumModal">
     <div class="modal-content">
         <div class="modal-title">Выдать Premium</div>
@@ -201,7 +200,6 @@
     let currentUser = null;
     let selectedUserId = null;
 
-    // === Проверка, что ты разработчик ===
     async function checkDev() {
         const userId = localStorage.getItem('0xvisual_id');
 
@@ -232,7 +230,6 @@
         }
     }
 
-    // === Загрузка пользователей ===
     async function loadUsers() {
         try {
             const [usersRes, premiumRes, devsRes] = await Promise.all([
@@ -304,16 +301,16 @@
 
             const safeLogin = (u.github_login || 'unknown').replace(/'/g, '');
 
-            html += `<tr>
-                <td class="user-id">#${u.id}</td>
-                <td>@${safeLogin}</td>
-                <td>${statusBadge}</td>
-                <td>${premiumUntil}</td>
-                <td>
-                    <button class="btn-action gold" onclick="openPremiumModal(${u.id}, '${safeLogin}')">+ Premium</button>
-                    ${isPremium ? `<button class="btn-action" onclick="revokePremium(${u.id})">Отозвать</button>` : ''}
-                </td>
-            </tr>`;
+            html += '<tr>' +
+                '<td class="user-id">#' + u.id + '</td>' +
+                '<td>@' + safeLogin + '</td>' +
+                '<td>' + statusBadge + '</td>' +
+                '<td>' + premiumUntil + '</td>' +
+                '<td>' +
+                    '<button class="btn-action gold" onclick="openPremiumModal(' + u.id + ', \'' + safeLogin + '\')">+ Premium</button>' +
+                    (isPremium ? '<button class="btn-action" onclick="revokePremium(' + u.id + ')">Отозвать</button>' : '') +
+                '</td>' +
+            '</tr>';
         }
 
         html += '</tbody></table>';
@@ -385,7 +382,7 @@
         }
     }
 
-    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+    document.getElementById('logoutBtn').addEventListener('click', function(e) {
         e.preventDefault();
         localStorage.clear();
         window.location.href = 'index.html';

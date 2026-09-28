@@ -326,17 +326,6 @@
         }
     }
 
-            // Проверяем разработчик ли
-            fetch(SUPABASE_URL + '/rest/v1/developers?user_id=eq.' + uuid + '&select=user_id', {
-                headers: { 'apikey': SUPABASE_ANON }
-            }).then(r => r.json()).then(d => {
-                if (Array.isArray(d) && d.length > 0) {
-                    document.getElementById('devBtn').style.display = 'inline-block';
-                }
-            });
-        }
-    }
-
     function logout() {
         if (!confirm('Выйти из аккаунта?')) return;
         localStorage.clear();

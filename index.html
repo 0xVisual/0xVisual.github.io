@@ -6,326 +6,144 @@
 <title>0xVisual — Visual Mod for Minecraft</title>
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     :root {
-        --bg: #050505;
-        --bg-2: #0a0a0a;
-        --bg-3: #0f0f0f;
-        --red: #ff2d2d;
-        --red-dim: #cc1f1f;
-        --text: #ffffff;
-        --text-dim: #888888;
-        --text-dimmer: #555555;
-        --border: #1a1a1a;
-        --border-red: rgba(255, 45, 45, 0.3);
+        --bg: #050505; --bg-2: #0a0a0a; --red: #ff2d2d; --red-dim: #cc1f1f;
+        --text: #ffffff; --text-dim: #888888; --text-dimmer: #555555;
+        --border: #1a1a1a; --border-red: rgba(255, 45, 45, 0.3);
     }
-
     html { scroll-behavior: smooth; }
-
     body {
-        background: var(--bg);
-        color: var(--text);
+        background: var(--bg); color: var(--text);
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        overflow-x: hidden;
-        line-height: 1.6;
+        overflow-x: hidden; line-height: 1.6;
     }
-
     body::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        background-image:
-            linear-gradient(rgba(255, 45, 45, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 45, 45, 0.03) 1px, transparent 1px);
-        background-size: 60px 60px;
-        pointer-events: none;
-        z-index: 0;
+        content: ''; position: fixed; inset: 0;
+        background-image: linear-gradient(rgba(255,45,45,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,45,45,0.03) 1px, transparent 1px);
+        background-size: 60px 60px; pointer-events: none; z-index: 0;
     }
-
     body::after {
-        content: '';
-        position: fixed;
-        top: -30%;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80%;
-        height: 60%;
-        background: radial-gradient(ellipse, rgba(255, 45, 45, 0.15) 0%, transparent 60%);
-        pointer-events: none;
-        z-index: 0;
+        content: ''; position: fixed; top: -30%; left: 50%;
+        transform: translateX(-50%); width: 80%; height: 60%;
+        background: radial-gradient(ellipse, rgba(255,45,45,0.15) 0%, transparent 60%);
+        pointer-events: none; z-index: 0;
     }
-
     nav {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 12px 24px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 60px;
-        background: rgba(10, 10, 10, 0.8);
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--border);
-        border-radius: 100px;
-        z-index: 100;
-        transition: all 0.4s ease;
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+        padding: 12px 24px; display: flex; justify-content: space-between;
+        align-items: center; gap: 60px; background: rgba(10,10,10,0.8);
+        backdrop-filter: blur(20px); border: 1px solid var(--border);
+        border-radius: 100px; z-index: 100; transition: all 0.4s ease;
     }
-
-    nav.scrolled {
-        top: 12px;
-        padding: 10px 20px;
-        background: rgba(5, 5, 5, 0.95);
-        border-color: var(--border-red);
-    }
-
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 18px;
-        font-weight: 900;
-        letter-spacing: -0.5px;
-        font-family: 'Courier New', monospace;
-    }
-
+    nav.scrolled { top: 12px; padding: 10px 20px; background: rgba(5,5,5,0.95); border-color: var(--border-red); }
+    .logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 900; letter-spacing: -0.5px; font-family: 'Courier New', monospace; }
     .logo-icon {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
         background: linear-gradient(135deg, var(--red) 0%, var(--red-dim) 100%);
-        border-radius: 6px;
-        font-family: monospace;
-        font-weight: 900;
-        font-size: 14px;
-        color: #fff;
-        box-shadow: 0 0 15px rgba(255, 45, 45, 0.4);
+        border-radius: 6px; font-family: monospace; font-weight: 900; font-size: 14px;
+        color: #fff; box-shadow: 0 0 15px rgba(255,45,45,0.4);
     }
-
     .nav-links { display: flex; gap: 30px; list-style: none; }
-    .nav-links a {
-        color: var(--text-dim);
-        text-decoration: none;
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        transition: color 0.3s ease;
-    }
+    .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s ease; }
     .nav-links a:hover { color: var(--text); }
-
     .nav-right { display: flex; align-items: center; gap: 16px; }
-
     .btn-nav {
-        padding: 8px 18px;
-        background: transparent;
-        border: 1px solid var(--border-red);
-        color: var(--red);
-        border-radius: 100px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
+        padding: 8px 18px; background: transparent; border: 1px solid var(--border-red);
+        color: var(--red); border-radius: 100px; font-size: 11px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+        transition: all 0.3s ease; text-decoration: none;
     }
-    .btn-nav:hover {
-        background: var(--red);
-        color: #fff;
-        box-shadow: 0 0 20px rgba(255, 45, 45, 0.5);
-    }
-
+    .btn-nav:hover { background: var(--red); color: #fff; box-shadow: 0 0 20px rgba(255,45,45,0.5); }
     .hero {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 120px 20px 60px;
-        position: relative;
-        z-index: 1;
+        min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+        justify-content: center; text-align: center; padding: 120px 20px 60px; position: relative; z-index: 1;
     }
-
     .hero-title {
-        font-size: clamp(40px, 7vw, 88px);
-        font-weight: 900;
-        line-height: 1;
-        letter-spacing: -3px;
-        text-transform: uppercase;
-        margin-bottom: 8px;
+        font-size: clamp(40px, 7vw, 88px); font-weight: 900; line-height: 1;
+        letter-spacing: -3px; text-transform: uppercase; margin-bottom: 8px;
     }
-
     .hero-title-2 {
-        font-size: clamp(36px, 6vw, 76px);
-        font-weight: 400;
-        font-style: italic;
-        color: var(--red);
-        letter-spacing: -2px;
-        margin-bottom: 40px;
-        font-family: Georgia, serif;
+        font-size: clamp(36px, 6vw, 76px); font-weight: 400; font-style: italic;
+        color: var(--red); letter-spacing: -2px; margin-bottom: 40px; font-family: Georgia, serif;
     }
-
-    .hero-buttons {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
     .btn-primary {
-        padding: 14px 28px;
-        background: transparent;
-        color: var(--text);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
+        padding: 14px 28px; background: transparent; color: var(--text);
+        border: 1px solid var(--border); border-radius: 8px; font-size: 13px;
+        font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+        cursor: pointer; transition: all 0.3s ease; text-decoration: none;
+        display: inline-flex; align-items: center; gap: 10px;
     }
-    .btn-primary:hover {
-        background: var(--red);
-        border-color: var(--red);
-        color: #fff;
-        box-shadow: 0 0 30px rgba(255, 45, 45, 0.4);
-        transform: translateY(-2px);
-    }
-
+    .btn-primary:hover { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 0 0 30px rgba(255,45,45,0.4); transform: translateY(-2px); }
     .user-card {
+        display: none; background: var(--bg-2); border: 1px solid var(--border-red);
+        border-radius: 16px; padding: 24px 32px; margin-top: 30px; text-align: center;
+        box-shadow: 0 0 40px rgba(255,45,45,0.15); animation: fadeIn 0.5s ease;
+    }
+    .user-card.visible { display: block; }
+    .user-card img {
+        width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--red);
+        box-shadow: 0 0 30px rgba(255,45,45,0.5);
+    }
+    .user-name { margin-top: 16px; font-size: 20px; font-weight: 800; color: #fff; }
+    .user-id { margin-top: 6px; font-family: 'Courier New', monospace; font-size: 14px; color: var(--red); letter-spacing: 2px; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    section { padding: 120px 60px; position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; }
+    .section-title {
+        font-size: clamp(36px, 5vw, 56px); font-weight: 900; letter-spacing: -2px;
+        text-transform: uppercase; line-height: 1; margin-bottom: 60px;
+        padding-left: 24px; border-left: 4px solid var(--red);
+    }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .feature { background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 32px; transition: all 0.4s ease; }
+    .feature:hover { border-color: var(--border-red); transform: translateY(-4px); }
+    .feature-title { font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .feature-text { font-size: 13px; color: var(--text-dim); line-height: 1.7; }
+    footer { padding: 60px; border-top: 1px solid var(--border); text-align: center; font-size: 12px; color: var(--text-dimmer); position: relative; z-index: 1; }
+    @media (max-width: 900px) { nav { padding: 10px 16px; gap: 20px; } .nav-links { display: none; } section { padding: 80px 20px; } .hero { padding: 100px 20px 40px; } }
+
+    /* === Password set card === */
+    .password-card {
         display: none;
         background: var(--bg-2);
         border: 1px solid var(--border-red);
         border-radius: 16px;
         padding: 24px 32px;
-        margin-top: 30px;
-        text-align: center;
-        box-shadow: 0 0 40px rgba(255, 45, 45, 0.15);
+        margin-top: 20px;
+        max-width: 400px;
+        box-shadow: 0 0 40px rgba(255,45,45,0.15);
         animation: fadeIn 0.5s ease;
     }
-    .user-card.visible { display: block; }
-
-    .user-card img {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        border: 3px solid var(--red);
-        box-shadow: 0 0 30px rgba(255, 45, 45, 0.5);
+    .password-card.visible { display: block; }
+    .password-card h3 { font-size: 16px; margin-bottom: 12px; }
+    .password-card input {
+        width: 100%; padding: 10px 14px; background: #0a0a0a;
+        border: 1px solid var(--border); border-radius: 8px; color: #fff;
+        font-size: 14px; margin-bottom: 12px; outline: none;
+        font-family: inherit;
     }
-
-    .user-name {
-        margin-top: 16px;
-        font-size: 20px;
-        font-weight: 800;
-        color: #fff;
+    .password-card input:focus { border-color: var(--red); }
+    .password-card button {
+        width: 100%; padding: 10px 14px; background: var(--red);
+        border: none; border-radius: 8px; color: #fff; font-size: 14px;
+        font-weight: 700; cursor: pointer; transition: all 0.3s ease;
     }
-
-    .user-id {
-        margin-top: 6px;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-        color: var(--red);
-        letter-spacing: 2px;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    section {
-        padding: 120px 60px;
-        position: relative;
-        z-index: 1;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .section-title {
-        font-size: clamp(36px, 5vw, 56px);
-        font-weight: 900;
-        letter-spacing: -2px;
-        text-transform: uppercase;
-        line-height: 1;
-        margin-bottom: 60px;
-        padding-left: 24px;
-        border-left: 4px solid var(--red);
-    }
-
-    .features {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-    }
-
-    .feature {
-        background: var(--bg-2);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 32px;
-        transition: all 0.4s ease;
-    }
-    .feature:hover {
-        border-color: var(--border-red);
-        transform: translateY(-4px);
-    }
-
-    .feature-title {
-        font-size: 16px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 12px;
-    }
-
-    .feature-text {
-        font-size: 13px;
-        color: var(--text-dim);
-        line-height: 1.7;
-    }
-
-    footer {
-        padding: 60px;
-        border-top: 1px solid var(--border);
-        text-align: center;
-        font-size: 12px;
-        color: var(--text-dimmer);
-        position: relative;
-        z-index: 1;
-    }
-
-    @media (max-width: 900px) {
-        nav { padding: 10px 16px; gap: 20px; }
-        .nav-links { display: none; }
-        section { padding: 80px 20px; }
-        .hero { padding: 100px 20px 40px; }
-    }
+    .password-card button:hover { background: #ff4444; box-shadow: 0 0 20px rgba(255,45,45,0.4); }
+    .password-card .info { font-size: 12px; color: #888; margin-top: 12px; }
+    .password-card .success { color: #3bff5c; font-size: 13px; margin-top: 12px; }
 </style>
 </head>
 <body>
 
 <nav id="navbar">
-    <div class="logo">
-        <div class="logo-icon">0x</div>
-        <span>VISUAL</span>
-    </div>
+    <div class="logo"><div class="logo-icon">0x</div><span>VISUAL</span></div>
     <ul class="nav-links">
         <li><a href="#home">Главная</a></li>
         <li><a href="#about">О нас</a></li>
         <li><a href="#download">Скачать</a></li>
     </ul>
     <div class="nav-right">
-        <a href="https://github.com/login/oauth/authorize?client_id=Ov23liXM9A3v41ZWA2uj&scope=read:user" 
+        <a href="https://github.com/login/oauth/authorize?client_id=Ov23liXM9A3v41ZWA2uj&scope=read:user%20user:email" 
            class="btn-nav" id="loginBtn">Войти</a>
     </div>
 </nav>
@@ -333,9 +151,9 @@
 <section class="hero" id="home">
     <h1 class="hero-title">Новый взгляд на</h1>
     <div class="hero-title-2">визуальный Minecraft</div>
-    <div class="hero-buttons">
+    <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
         <a href="#download" class="btn-primary">Скачать мод ↓</a>
-        <a href="https://github.com/login/oauth/authorize?client_id=Ov23liXM9A3v41ZWA2uj&scope=read:user" 
+        <a href="https://github.com/login/oauth/authorize?client_id=Ov23liXM9A3v41ZWA2uj&scope=read:user%20user:email" 
            class="btn-primary" id="loginBtnMain">Войти через GitHub</a>
     </div>
 
@@ -343,49 +161,36 @@
         <img id="userAvatar" src="" alt="">
         <div class="user-name" id="userLogin"></div>
         <div class="user-id" id="userId"></div>
-        <div style="margin-top:12px; font-size:12px; color:#888;">
-            Скопируй ID и вставь его в моде
-        </div>
+    </div>
+
+    <div class="password-card" id="passwordCard">
+        <h3>Придумай пароль</h3>
+        <div class="info">Этот пароль ты будешь использовать для входа в моде</div>
+        <input type="password" id="passwordInput" placeholder="Пароль (мин. 6 символов)">
+        <button id="savePasswordBtn">Сохранить пароль</button>
+        <div class="success" id="passwordSuccess" style="display:none;"></div>
     </div>
 </section>
 
 <section id="about">
     <h2 class="section-title">Возможности</h2>
     <div class="features">
-        <div class="feature">
-            <div class="feature-title">ClickGUI</div>
-            <div class="feature-text">Удобное меню с колонками. Открывается по Right Shift.</div>
-        </div>
-        <div class="feature">
-            <div class="feature-title">HUD и ArrayList</div>
-            <div class="feature-text">FPS, координаты, TargetHUD, список включённых функций.</div>
-        </div>
-        <div class="feature">
-            <div class="feature-title">Sky & Time</div>
-            <div class="feature-text">Смена цвета неба и времени суток — только для тебя.</div>
-        </div>
-        <div class="feature">
-            <div class="feature-title">China Hat</div>
-            <div class="feature-text">3D-конус над головой. Работает только в третьем лице.</div>
-        </div>
+        <div class="feature"><div class="feature-title">ClickGUI</div><div class="feature-text">Меню с колонками. Right Shift.</div></div>
+        <div class="feature"><div class="feature-title">HUD</div><div class="feature-text">FPS, координаты, TargetHUD, ArrayList.</div></div>
+        <div class="feature"><div class="feature-title">Sky & Time</div><div class="feature-text">Смена цвета неба и времени суток.</div></div>
+        <div class="feature"><div class="feature-title">China Hat</div><div class="feature-text">3D-конус в третьем лице.</div></div>
     </div>
 </section>
 
 <section id="download">
     <h2 class="section-title">Скачать 0xVisual</h2>
     <div style="text-align:center;">
-        <a href="https://github.com/0xVisual/0xVisual/releases" class="btn-primary">
-            Скачать мод ↓
-        </a>
-        <p style="margin-top:20px; color:#888; font-size:13px;">
-            Minecraft 1.20.1 Fabric · Требует Fabric API · Java 17+
-        </p>
+        <a href="https://github.com/0xVisual/0xVisual/releases" class="btn-primary">Скачать мод ↓</a>
+        <p style="margin-top:20px; color:#888; font-size:13px;">Minecraft 1.20.1 Fabric · Fabric API · Java 17+</p>
     </div>
 </section>
 
-<footer>
-    © 2026 0xVisual. Не связан с Mojang Studios.
-</footer>
+<footer>© 2026 0xVisual. Не связан с Mojang Studios.</footer>
 
 <script>
     const navbar = document.getElementById('navbar');
@@ -394,7 +199,12 @@
         else navbar.classList.remove('scrolled');
     });
 
-    const SUPABASE_FUNCTION = 'https://brdkzffitlvfpesqtlth.supabase.co/functions/v1/github-auth';
+    const SUPABASE_URL = 'https://brdkzffitlvfpesqtlth.supabase.co';
+    const SUPABASE_ANON = 'sb_publishable_t1edVLpfw8Ez8MplA7ZPMw_oWp4tKSI';
+    const GITHUB_AUTH_FN = SUPABASE_URL + '/functions/v1/github-auth';
+    const CREATE_PROFILE_FN = SUPABASE_URL + '/functions/v1/create-profile';
+
+    let currentGithubUser = null;
 
     async function checkAuth() {
         const params = new URLSearchParams(window.location.search);
@@ -403,28 +213,43 @@
         const savedId = localStorage.getItem('0xvisual_id');
         const savedLogin = localStorage.getItem('0xvisual_login');
         const savedAvatar = localStorage.getItem('0xvisual_avatar');
+        const savedEmail = localStorage.getItem('0xvisual_email');
 
         if (savedId && savedLogin) {
+            currentGithubUser = { id: savedId, login: savedLogin, avatar: savedAvatar, email: savedEmail };
             showUser(savedLogin, savedId, savedAvatar);
+            if (!savedEmail) {
+                document.getElementById('passwordCard').classList.add('visible');
+            }
         }
 
         if (!code) return;
 
         try {
-            const res = await fetch(SUPABASE_FUNCTION, {
+            const res = await fetch(GITHUB_AUTH_FN, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code })
             });
-
             const data = await res.json();
 
             if (data.id) {
                 localStorage.setItem('0xvisual_id', data.id);
                 localStorage.setItem('0xvisual_login', data.login);
                 localStorage.setItem('0xvisual_avatar', data.avatar || '');
+                if (data.email) localStorage.setItem('0xvisual_email', data.email);
 
+                currentGithubUser = data;
                 showUser(data.login, data.id, data.avatar);
+
+                // Показываем плашку для пароля
+                if (data.email) {
+                    document.getElementById('passwordCard').classList.add('visible');
+                } else {
+                    // Если email не пришёл — просим ввести вручную
+                    document.getElementById('passwordCard').classList.add('visible');
+                    document.getElementById('passwordInput').placeholder = 'Email из GitHub';
+                }
 
                 window.history.replaceState({}, document.title, window.location.pathname);
             } else {
@@ -436,16 +261,10 @@
     }
 
     function showUser(login, id, avatar) {
-        const card = document.getElementById('userCard');
-        const avatarEl = document.getElementById('userAvatar');
-        const loginEl = document.getElementById('userLogin');
-        const idEl = document.getElementById('userId');
-
-        avatarEl.src = avatar || 'https://github.com/identicons/' + login;
-        loginEl.textContent = '@' + login;
-        idEl.textContent = 'ID: ' + id;
-
-        card.classList.add('visible');
+        document.getElementById('userAvatar').src = avatar || 'https://github.com/identicons/' + login;
+        document.getElementById('userLogin').textContent = '@' + login;
+        document.getElementById('userId').textContent = 'ID: ' + id;
+        document.getElementById('userCard').classList.add('visible');
 
         const btn = document.getElementById('loginBtn');
         btn.textContent = 'ID: ' + id;
@@ -454,6 +273,49 @@
         btn.href = '#';
         document.getElementById('loginBtnMain').style.display = 'none';
     }
+
+    // === Сохранение пароля ===
+    document.getElementById('savePasswordBtn').addEventListener('click', async () => {
+        const password = document.getElementById('passwordInput').value;
+        if (password.length < 6) {
+            alert('Пароль должен быть минимум 6 символов');
+            return;
+        }
+
+        const login = localStorage.getItem('0xvisual_login');
+        const email = localStorage.getItem('0xvisual_email');
+
+        if (!email) {
+            alert('Email не получен от GitHub. Попробуй выйти и войти заново.');
+            return;
+        }
+
+        try {
+            const res = await fetch(SUPABASE_URL + '/functions/v1/create-password-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    username: login
+                })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                document.getElementById('passwordSuccess').textContent =
+                    '✓ Пароль сохранён! Используй логин @' + login + ' и этот пароль для входа в моде.';
+                document.getElementById('passwordSuccess').style.display = 'block';
+                document.getElementById('savePasswordBtn').disabled = true;
+                document.getElementById('savePasswordBtn').textContent = 'Сохранено';
+            } else {
+                alert('Ошибка: ' + (data.error || 'что-то пошло не так'));
+            }
+        } catch (e) {
+            alert('Ошибка соединения: ' + e.message);
+        }
+    });
 
     checkAuth();
 </script>

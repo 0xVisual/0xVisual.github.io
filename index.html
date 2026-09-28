@@ -47,12 +47,12 @@
     .nav-links { display: flex; gap: 30px; list-style: none; }
     .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s ease; }
     .nav-links a:hover { color: var(--text); }
-    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
     .btn-nav {
         padding: 8px 18px; background: transparent; border: 1px solid var(--border-red);
         color: var(--red); border-radius: 100px; font-size: 11px; font-weight: 700;
         text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
-        transition: all 0.3s ease; text-decoration: none;
+        transition: all 0.3s ease; text-decoration: none; white-space: nowrap;
     }
     .btn-nav:hover { background: var(--red); color: #fff; box-shadow: 0 0 20px rgba(255,45,45,0.5); }
     .hero {
@@ -102,7 +102,6 @@
     footer { padding: 60px; border-top: 1px solid var(--border); text-align: center; font-size: 12px; color: var(--text-dimmer); position: relative; z-index: 1; }
     @media (max-width: 900px) { nav { padding: 10px 16px; gap: 20px; } .nav-links { display: none; } section { padding: 80px 20px; } .hero { padding: 100px 20px 40px; } }
 
-    /* === Password set card === */
     .password-card {
         display: none;
         background: var(--bg-2);
@@ -129,8 +128,26 @@
         font-weight: 700; cursor: pointer; transition: all 0.3s ease;
     }
     .password-card button:hover { background: #ff4444; box-shadow: 0 0 20px rgba(255,45,45,0.4); }
+    .password-card button:disabled { background: #333; cursor: not-allowed; }
     .password-card .info { font-size: 12px; color: #888; margin-top: 12px; }
     .password-card .success { color: #3bff5c; font-size: 13px; margin-top: 12px; }
+
+    .logout-btn-card {
+        margin-top: 16px;
+        padding: 10px 20px;
+        background: transparent;
+        border: 1px solid #333;
+        color: #888;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+    .logout-btn-card:hover { border-color: var(--red); color: var(--red); }
 </style>
 </head>
 <body>
@@ -145,6 +162,7 @@
     <div class="nav-right">
         <a href="https://github.com/login/oauth/authorize?client_id=Ov23liXM9A3v41ZWA2uj&scope=read:user%20user:email" 
            class="btn-nav" id="loginBtn">Войти</a>
+        <a href="#" class="btn-nav" id="logoutBtn" style="display:none; border-color:#555; color:#888;">Выйти</a>
     </div>
 </nav>
 
@@ -161,6 +179,7 @@
         <img id="userAvatar" src="" alt="">
         <div class="user-name" id="userLogin"></div>
         <div class="user-id" id="userId"></div>
+        <button class="logout-btn-card" id="logoutBtnCard">Выйти из аккаунта</button>
     </div>
 
     <div class="password-card" id="passwordCard">
@@ -193,19 +212,21 @@
 <footer>© 2026 0xVisual. Не связан с Mojang Studios.</footer>
 
 <script>
+    // === Navbar scroll ===
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) navbar.classList.add('scrolled');
         else navbar.classList.remove('scrolled');
     });
 
+    // === Константы ===
     const SUPABASE_URL = 'https://brdkzffitlvfpesqtlth.supabase.co';
     const SUPABASE_ANON = 'sb_publishable_t1edVLpfw8Ez8MplA7ZPMw_oWp4tKSI';
     const GITHUB_AUTH_FN = SUPABASE_URL + '/functions/v1/github-auth';
-    const CREATE_PROFILE_FN = SUPABASE_URL + '/functions/v1/create-profile';
 
     let currentGithubUser = null;
 
+    // === Проверка авторизации ===
     async function checkAuth() {
         const params = new URLSearchParams(window.location.search);
         const code = params.get('code');
@@ -242,11 +263,9 @@
                 currentGithubUser = data;
                 showUser(data.login, data.id, data.avatar);
 
-                // Показываем плашку для пароля
                 if (data.email) {
                     document.getElementById('passwordCard').classList.add('visible');
                 } else {
-                    // Если email не пришёл — просим ввести вручную
                     document.getElementById('passwordCard').classList.add('visible');
                     document.getElementById('passwordInput').placeholder = 'Email из GitHub';
                 }
@@ -260,6 +279,7 @@
         }
     }
 
+    // === Показать пользователя ===
     function showUser(login, id, avatar) {
         document.getElementById('userAvatar').src = avatar || 'https://github.com/identicons/' + login;
         document.getElementById('userLogin').textContent = '@' + login;
@@ -271,8 +291,26 @@
         btn.style.background = 'var(--red)';
         btn.style.color = '#fff';
         btn.href = '#';
+
         document.getElementById('loginBtnMain').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'inline-block';
     }
+
+    // === Выход ===
+    function logout() {
+        if (!confirm('Выйти из аккаунта?')) return;
+        localStorage.removeItem('0xvisual_id');
+        localStorage.removeItem('0xvisual_login');
+        localStorage.removeItem('0xvisual_avatar');
+        localStorage.removeItem('0xvisual_email');
+        window.location.reload();
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
+    });
+    document.getElementById('logoutBtnCard').addEventListener('click', logout);
 
     // === Сохранение пароля ===
     document.getElementById('savePasswordBtn').addEventListener('click', async () => {
@@ -286,7 +324,7 @@
         const email = localStorage.getItem('0xvisual_email');
 
         if (!email) {
-            alert('Email не получен от GitHub. Попробуй выйти и войти заново.');
+            alert('Email не получен от GitHub. Выйди и войди заново.');
             return;
         }
 
@@ -294,11 +332,7 @@
             const res = await fetch(SUPABASE_URL + '/functions/v1/create-password-user', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: email,
-                    password: password,
-                    username: login
-                })
+                body: JSON.stringify({ email, password, username: login })
             });
 
             const data = await res.json();
